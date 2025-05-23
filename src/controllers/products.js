@@ -1,10 +1,14 @@
 import createHttpError from "http-errors";
 import { deleteProduct, getAllProducts, getProductById, postProduct, updateProduct } from "../services/products.js";
-import { validateObjectId } from "../utils/validateObjectId.js";
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 
 
 export const getAllProductsController = async (req, res) => {
-    const products = await getAllProducts();
+    const { page, perPage } = parsePaginationParams(req.query);
+    const products = await getAllProducts({
+        page,
+        perPage,
+    });
 
     res.status(200).json({
         status: 200,
@@ -15,8 +19,6 @@ export const getAllProductsController = async (req, res) => {
 
 export const getProductByIdController = async (req, res) => {
     const { productId } = req.params;
-
-    validateObjectId(productId, 'Product');
 
     const product = await getProductById(productId);
 
@@ -43,7 +45,6 @@ export const postProductController = async (req, res) => {
 
 export const updateProductController = async (req, res) => {
     const { productId } = req.params;
-    validateObjectId(productId, 'Product');
 
     const result = await updateProduct(productId, req.body);
 
@@ -60,7 +61,6 @@ export const updateProductController = async (req, res) => {
 
 export const deleteProductController = async (req, res) => {
     const { productId } = req.params;
-    validateObjectId(productId, 'Product');
 
     const product = await deleteProduct(productId);
 
